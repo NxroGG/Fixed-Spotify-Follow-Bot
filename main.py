@@ -161,6 +161,3 @@ if __name__ == "__main__":
         start_threads()
     except KeyboardInterrupt:
         print("\nStopped by user.")
-
-
-
