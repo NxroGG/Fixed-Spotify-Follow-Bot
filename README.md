@@ -22,8 +22,6 @@
 
 ### Please note
 
-# Disclaimer
-
 This script is provided **for educational purposes only.**  
 It is **not affiliated with Spotify AB** or any related services.  
 Using automation on Spotify may violate their **Terms of Service** and can result in **account penalties or permanent bans.**
