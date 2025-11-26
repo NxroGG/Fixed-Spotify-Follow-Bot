@@ -23,7 +23,11 @@
 ### Please note
 
 I,the developer, am not responsible for any consequences resulting from the use or misuse of this script.
+
 This tool is not affiliated with, endorsed by, or supported by Snapchat Inc. in any way.
+
 Use of this script may violate Snapchat’s Terms of Service (TOS) and Community Guidelines.
+
 Using automation tools like this may possibly result in your account being permanently banned or disabled.
-Proceed at your own risk. This script is made for educational purposes.
+Proceed at your own risk. 
+This script is made for educational purposes.
