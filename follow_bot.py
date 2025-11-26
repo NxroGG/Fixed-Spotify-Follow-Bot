@@ -105,4 +105,4 @@ class spotify:
         except:
             return False, "while following"
 
-#Developed by https://github.com/useragents
+#Developed By https://github.com/useragents & Fixed By https://github.com/NxroGG
