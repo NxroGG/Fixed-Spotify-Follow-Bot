@@ -1,119 +1,166 @@
-from follow_bot import spotify
-import threading, os, time
-
-# ======================
-# GLOBALS
-# ======================
-lock = threading.Lock()
-counter = 0
-proxies = []
-proxy_index = 0
+import time, threading, random, os
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
 
-# ======================
-# LOAD SETTINGS
-# ======================
-spotify_profile = input("Spotify Link or Username: ").strip()
-threads = int(input("\nThreads: "))
+# ============================
+# SETTINGS
+# ============================
+SPOTIFY_PROFILE = input("Spotify Link or Username: ").strip()
+THREADS = int(input("Threads: "))
 
-print("\n[1] Proxies\n[2] Proxyless")
-option = int(input("\n> ").strip())
+# Turn raw username into full URL
+if "spotify.com" not in SPOTIFY_PROFILE:
+    SPOTIFY_PROFILE = f"https://open.spotify.com/user/{SPOTIFY_PROFILE}"
+
+FOLLOW_SELECTOR = "button[data-testid='follow-button']"
+
+success = 0
+success_lock = threading.Lock()
 
 
-# ======================
-# FUNCTIONS
-# ======================
-
-def load_proxies():
-    """Load proxies from proxies.txt."""
+# ============================
+# LOAD PROXY WEBSITES
+# ============================
+def load_proxy_sites():
     if not os.path.exists("proxies.txt"):
-        print("\nFile proxies.txt not found")
-        time.sleep(3)
+        print("\n[ERROR] proxies.txt not found")
         raise SystemExit
 
     with open("proxies.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            proxy = line.strip()
-            if proxy:
-                proxies.append(proxy)
+        proxies = [line.strip() for line in f if line.strip()]
 
     if not proxies:
-        print("\nNo proxies found in proxies.txt")
-        time.sleep(3)
+        print("\n[ERROR] proxies.txt is empty!")
         raise SystemExit
 
-
-if option == 1:
-    load_proxies()
-
-
-def safe_print(msg: str):
-    """Thread-safe print."""
-    with lock:
-        print(msg)
+    print(f"\nLoaded {len(proxies)} proxy websites.\n")
+    return proxies
 
 
-def get_proxy():
-    """Rotate proxies safely."""
-    global proxy_index
-
-    if not proxies:
-        return None
-
-    with lock:
-        proxy = proxies[proxy_index]
-        proxy_index = (proxy_index + 1) % len(proxies)
-        return proxy
+PROXY_SITES = load_proxy_sites()
 
 
-def worker():
-    """Thread worker that attempts to follow with up to 3 retries."""
-    global counter
+# ============================
+# SELENIUM SETUP
+# ============================
+def create_driver():
+    opts = Options()
+    opts.add_argument("--disable-blink-features=AutomationControlled")
+    opts.add_argument("--window-size=900,900")
 
-    for _ in range(3):  # retry up to 3 times
+    # OPTIONAL: Headless mode
+    # opts.add_argument("--headless=new")
+
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=opts)
+    return driver
+
+
+# ============================
+# AUTO-DETECT PROXY INPUT BOX
+# ============================
+POSSIBLE_INPUTS = [
+    "input[name='d']",          # proxysite.com
+    "input#input",              # hidester
+    "input[name='u']",          # generic
+    "input[type='text']",
+    "input.form-control",
+]
+
+
+def find_proxy_input(driver):
+    for selector in POSSIBLE_INPUTS:
         try:
-            if option == 1:
-                proxy = get_proxy()
-                obj = spotify(spotify_profile, proxy)
-            else:
-                obj = spotify(spotify_profile)
+            el = driver.find_element(By.CSS_SELECTOR, selector)
+            return el
+        except:
+            pass
+    return None
 
-            result, error = obj.follow()
 
-            if result is True:
-                with lock:
-                    counter += 1
-                safe_print(f"[SUCCESS] Followed {counter}")
+# ============================
+# WORKER THREAD
+# ============================
+def worker():
+    global success
+
+    try:
+        proxy_url = random.choice(PROXY_SITES)
+        print(f"[THREAD] Using proxy → {proxy_url}")
+
+        driver = create_driver()
+        driver.get(proxy_url)
+        time.sleep(2)
+
+        input_box = find_proxy_input(driver)
+        if not input_box:
+            print("[ERROR] Input box not found (new layout / Cloudflare)")
+            driver.quit()
+            return
+
+        # Type Spotify URL
+        input_box.clear()
+        input_box.send_keys(SPOTIFY_PROFILE)
+        time.sleep(0.5)
+
+        # Try to submit
+        try:
+            input_box.submit()
+        except:
+            # Try clicking the first submit button
+            try:
+                btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+                btn.click()
+            except:
+                print("[ERROR] Unable to submit URL")
+                driver.quit()
                 return
 
-            else:
-                safe_print(f"[ERROR] {error}")
-                time.sleep(0.4)
+        time.sleep(5)
 
-        except Exception as e:
-            safe_print(f"[THREAD ERROR] {e}")
-            time.sleep(0.4)
+        # Try clicking follow
+        try:
+            follow_btn = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, FOLLOW_SELECTOR))
+            )
+            follow_btn.click()
+
+            with success_lock:
+                success += 1
+                print(f"[SUCCESS] Follow #{success}")
+
+        except:
+            print("[ERROR] Follow button not found.")
+
+        driver.quit()
+
+    except Exception as e:
+        print(f"[THREAD ERROR] {e}")
 
 
+# ============================
+# THREAD MANAGER
+# ============================
 def start_threads():
-    """Main loop that spawns threads up to thread limit."""
     while True:
-        current_threads = threading.active_count() - 1  # subtract main thread
-
-        if current_threads < threads:
-            t = threading.Thread(target=worker, daemon=True)
-            t.start()
-
-        time.sleep(0.01)
+        if threading.active_count() - 1 < THREADS:
+            threading.Thread(target=worker, daemon=True).start()
+        time.sleep(0.1)
 
 
-# ======================
-# MAIN START
-# ======================
+# ============================
+# MAIN
+# ============================
 if __name__ == "__main__":
-    safe_print("Starting follower system…\n")
-
+    print("\nStarting Web Proxy Spotify Bot...\n")
     try:
         start_threads()
     except KeyboardInterrupt:
-        safe_print("\nStopped by user.")
+        print("\nStopped by user.")
+
+
+
