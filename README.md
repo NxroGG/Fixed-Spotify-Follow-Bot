@@ -22,7 +22,7 @@
 
 ### Please note
 
-This script is for **educational purposes only** and is **not affiliated with Snapchat Inc.**  
+This script is for **educational purposes only** and is **not affiliated with Spotify.**  
 
 Using automation may **violate Snapchat’s Terms of Service** and can result in **account bans or other consequences**.  
 
