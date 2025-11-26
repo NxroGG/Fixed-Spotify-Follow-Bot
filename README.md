@@ -14,7 +14,7 @@
 
 ### Usage
 
-1. Download ZIP <a href="https://github.com/useragents/Proxyless-Spotify-Follow-Bot/archive/refs/heads/main.zip">here</a> and extract the ZIP 
+1. Download ZIP <a href="https://github.com/nxro/Fixed-Spotify-Follow-Bot/archive/refs/heads/main.zip">here</a> and extract the ZIP 
 2. Install <a href="https://github.com/useragents/Instagram-Username-Auto-Claimer/blob/main/requirements.txt">requirements.txt</a> by typing `pip install -r requirements.txt` in Command Prompt
 4. Run the `run.bat` file and enter the amount of threads
 
