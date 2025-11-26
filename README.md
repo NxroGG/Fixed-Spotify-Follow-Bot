@@ -22,12 +22,13 @@
 
 ### Please note
 
-This script is for **educational purposes only** and is **not affiliated with Spotify.**  
+# Disclaimer
 
-Using automation may **violate Snapchat’s Terms of Service** and can result in **account bans or other consequences**.  
+This script is provided **for educational purposes only.**  
+It is **not affiliated with Spotify AB** or any related services.  
+Using automation on Spotify may violate their **Terms of Service** and can result in **account penalties or permanent bans.**
 
-I, the developer, am **not responsible** for any misuse, damage, or outcomes resulting from this tool.  
-Use at your **own risk**.
+I, the developer, am **not responsible** for any misuse, damage, or consequences that may result from using this tool.  
+Use at your **own risk.**
 
-The original script was created by **https://github.com/useragents**.  
-It was **fixed, updated, and made fully functional again by https://github.com/nxroGG**, which I operate.
+Originally created by **https://github.com/useragents**, and later **fixed, updated, and restored by https://github.com/nxroGG**, which I operate.
