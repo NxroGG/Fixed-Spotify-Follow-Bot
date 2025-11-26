@@ -22,12 +22,14 @@
 
 ### Please note
 
-I,the developer, am not responsible for any consequences resulting from the use or misuse of this script.
+# Disclaimer
 
-This tool is not affiliated with, endorsed by, or supported by Snapchat Inc. in any way.
+This script is for **educational purposes only** and is **not affiliated with Snapchat Inc.**  
 
-Use of this script may violate Snapchat’s Terms of Service (TOS) and Community Guidelines.
+Using automation may **violate Snapchat’s Terms of Service** and can result in **account bans or other consequences**.  
 
-Using automation tools like this may possibly result in your account being permanently banned or disabled.
-Proceed at your own risk. 
-This script is made for educational purposes.
+I, the developer, am **not responsible** for any misuse, damage, or outcomes resulting from this tool.  
+Use at your **own risk**.
+
+The original script was created by **https://github.com/useragents**.  
+It was **fixed, updated, and made fully functional again by https://github.com/nxroGG**, which I operate.
